@@ -36,3 +36,19 @@
     transform: rotate(360deg);
   }
 }
+
+.cursor {
+  display: inline-block;
+  width: 1ch;
+  background-color: green;
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  from, to {
+    background-color: transparent;
+  }
+  50% {
+    background-color: green;
+  }
+}
