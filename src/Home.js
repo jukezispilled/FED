@@ -26,7 +26,7 @@ export default function Home() {
     <div className="min-h-screen bg-black text-green-500 p-4 md:p-6 pt-[7.5%] md:pt-[3.5%] font-mono">
       <div className='absolute top-0 left-0 w-full bg-green-500 py-1 text-xs text-center text-black'>CA: updating...</div>
       <header className="flex items-center justify-between mb-4">
-        <h1 className="text-xl md:text-3xl font-bold">Spy Monkey Terminal v1.0</h1>
+        <h1 className="text-xl md:text-3xl font-bold">SPY Terminal v1.0</h1>
         <div className='flex space-x-3'>
             <div className='flex items-center z-[50]'>
             <a href="https://x.com/" className='transition ease-in-out duration-150'>
