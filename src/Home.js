@@ -123,13 +123,13 @@ export default function Home() {
       case 'twitter':
         setOutput((prev) => [
           ...prev,
-          'Visit my Twitter: [Twitter Profile](https://x.com/)',
+          'Visit my Twitter: [Twitter Profile](https://x.com/solFEDtoken)',
         ]);
         break;
       case 'telegram':
         setOutput((prev) => [
           ...prev,
-          'Join my Telegram: [Telegram Channel](https://t.me/)',
+          'Join my Telegram: [Telegram Channel](https://t.me/solFEDportal)',
         ]);
         break;
       default:
