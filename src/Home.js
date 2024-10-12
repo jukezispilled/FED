@@ -88,7 +88,7 @@ export default function Home() {
       case 'ca':
         setOutput((prev) => [
           ...prev,
-          'updating...',
+          '93593rQwwqMmskArhg8owC5hUn6JTzCMhihVGshCpump',
         ]);
         break;
       case 'portfolio':
