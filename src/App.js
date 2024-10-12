@@ -1,13 +1,31 @@
 import React, { useState, useEffect } from 'react';
-import TypingAnimation from './typing-animation';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronRight } from 'lucide-react';
 import Home from './Home';
 
-function App() {
+const TypingAnimation = ({ text, duration }) => {
+  const [displayText, setDisplayText] = useState('');
+
+  useEffect(() => {
+    let i = 0;
+    const intervalId = setInterval(() => {
+      setDisplayText(text.slice(0, i));
+      i++;
+      if (i > text.length) clearInterval(intervalId);
+    }, duration / text.length);
+
+    return () => clearInterval(intervalId);
+  }, [text, duration]);
+
+  return <span>{displayText}</span>;
+};
+
+const App = () => {
   const [currentTime, setCurrentTime] = useState('');
   const [currentDate, setCurrentDate] = useState('');
   const [scanProgress, setScanProgress] = useState(0);
   const [showAccessGranted, setShowAccessGranted] = useState(false);
-  const [navigate, setNavigate] = useState(false); // Add state to navigate to the new component
+  const [navigate, setNavigate] = useState(false);
 
   useEffect(() => {
     const updateDateTime = () => {
@@ -31,56 +49,120 @@ function App() {
         }
         return prev + 1;
       });
-    }, 40);
+    }, 30);
 
     return () => clearInterval(scanInterval);
   }, []);
 
-  // Navigate to new component after 2 seconds of showing "ACCESS GRANTED"
   useEffect(() => {
     if (showAccessGranted) {
       const timeout = setTimeout(() => {
         setNavigate(true);
-      }, 500);
+      }, 1500);
       return () => clearTimeout(timeout);
     }
   }, [showAccessGranted]);
 
-  // If navigate is true, render the new component
   if (navigate) {
     return <Home />;
   }
 
   return (
-    <div className="h-screen w-screen bg-black text-green-500 font-mono flex flex-col items-center justify-center p-4">
-      <div className="absolute bottom-5 right-5 p-2 text-right">
+    <div className="h-screen w-screen bg-black text-cyan-400 font-mono flex flex-col items-center justify-center p-4 overflow-hidden relative">
+      {/* Animated background */}
+      <div className="absolute inset-0 overflow-hidden">
+        {[...Array(100)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute bg-cyan-500 rounded-full opacity-20"
+            style={{
+              width: Math.random() * 4 + 1,
+              height: Math.random() * 4 + 1,
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+            }}
+            animate={{
+              y: [0, -1000],
+              opacity: [0.2, 0],
+            }}
+            transition={{
+              duration: Math.random() * 10 + 10,
+              repeat: Infinity,
+              ease: 'linear',
+            }}
+          />
+        ))}
+      </div>
+
+      {/* HUD elements */}
+      <div className="absolute top-5 left-5 p-2 text-left">
         <div className="text-xl mb-2">
-          <TypingAnimation className="text-xl text-right" text={`TIME: ${currentTime}`} duration={120} />
+          TIME: {currentTime}
         </div>
         <div className="text-xl mb-2">
-          <TypingAnimation className="text-xl text-right" text={`DATE: ${currentDate}`} duration={120} />
+          DATE: {currentDate}
         </div>
         <div className="text-xl">
-          <TypingAnimation className="text-xl text-right" text="LOCATION: [SOLANA]" duration={120} />
+          LOCATION: PUMP.FUN
         </div>
       </div>
-      <div className="relative w-64 h-64 flex items-center justify-center">
-        <img src="spy.png" alt="Spy" className="w-full h-full object-cover" />
-        <div 
-          className="absolute top-0 left-0 w-full bg-red-500 opacity-30 transition-all duration-100" 
-          style={{ height: `${scanProgress}%` }}
+
+      {/* Main verification interface */}
+      <motion.div
+        className="relative w-96 h-96 flex items-center justify-center"
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ duration: 0.5, type: 'spring' }}
+      >
+        {/* Outer ring */}
+        <motion.div
+          className="absolute w-full h-full border-4 border-cyan-500 rounded-full opacity-20"
+          animate={{ rotate: 360 }}
+          transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
         />
-        <div className="absolute top-0 left-0 w-full text-center py-2 font-semibold">
-          Scanning: {scanProgress}%
+
+        {/* Inner ring */}
+        <motion.div
+          className="absolute w-5/6 h-5/6 border-2 border-cyan-400 rounded-full opacity-30"
+          animate={{ rotate: -360 }}
+          transition={{ duration: 15, repeat: Infinity, ease: 'linear' }}
+        />
+
+        {/* Scan effect */}
+        <motion.div 
+          className="absolute inset-0 bg-gradient-to-b from-cyan-500 to-transparent opacity-50 rounded-full"
+          style={{ clipPath: `inset(${100 - scanProgress}% 0 0 0)` }}
+          transition={{ duration: 0.1 }}
+        />
+
+        {/* User image */}
+        <div className="relative w-64 h-64 rounded-full overflow-hidden">
+          <img src="fed.png" alt="Spy" className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-cyan-900 opacity-50" />
         </div>
-        {showAccessGranted && (
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-4xl text-green-500 text-center font-bold z-20">
-            ACCESS GRANTED
-          </div>
-        )}
+
+        {/* Progress indicator */}
+        <div className="absolute bottom-0 left-0 w-full text-center py-2 font-semibold text-lg">
+          Verifying: {scanProgress}%
+        </div>
+      </motion.div>
+
+      {/* Additional HUD elements */}
+      <div className="absolute bottom-5 right-5 p-2 text-right">
+        <motion.div
+          className="text-xl mb-2 flex items-center justify-end"
+          animate={{ x: [0, 5, 0] }}
+          transition={{ duration: 2, repeat: Infinity }}
+        >
+          <span className="mr-2">SYSTEM READY</span>
+          <ChevronRight />
+        </motion.div>
+        <div className="text-xl">
+          <TypingAnimation text="CLEARANCE: TOP SECRET" duration={120} />
+        </div>
       </div>
     </div>
   );
-}
+};
 
 export default App;
